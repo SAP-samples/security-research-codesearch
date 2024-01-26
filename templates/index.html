@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset=utf-8>
+    <title></title>
+    <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="static/codemirror.css">
+    <script src="static/codemirror.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.2/mode/clike/clike.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.2/theme/eclipse.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"
+            integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css"
+          integrity="sha512-hasIneQUHlh06VNBe7f6ZcHmeRTLIaQWFd43YriJ0UND19bvYRauxthDg8E4eVNPm9bRUhr5JGeqH7FRFXQu5g=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <style>
+@import url(https://fonts.googleapis.com/css?family=Open+Sans);
+
+body{
+  background: #f2f2f2;
+  font-family: 'Open Sans', sans-serif;
+}
+
+.search {
+  width: 100%;
+  position: relative;
+  display: flex;
+}
+
+.searchTerm {
+  width: 100%;
+  border: 3px solid #00B4CC;
+  padding: 5px;
+  height: 20px;
+  border-radius: 5px 0 0 5px;
+  outline: none;
+  color: #9DBFAF;
+}
+
+.searchTerm:focus{
+  color: #00B4CC;
+}
+.vulnButton {
+  width: 40px;
+  height: 36px;
+  border: 1px solid #00B4CC;
+  background: #00B4CC;
+  text-align: center;
+  color: #fff;
+  border-radius: 0 5px 5px 0;
+  cursor: pointer;
+  font-size: 20px;
+}
+.results {
+    margin-top: 20px;
+    overflow: auto;
+    height: 30em;
+    width: 500px;
+}
+
+.result {
+    text-align: left;
+    border: 1px;
+    border-color: grey;
+    border-style: solid;
+    margin-top: 10px;
+    background-color: #f7f7f7;
+    padding: 5px;
+}
+
+.found {
+    margin: 5px;
+    font-size: 10;
+    font-size: small;
+}
+
+
+.searchButton {
+  width: 40px;
+  height: 36px;
+  border: 1px solid #00B4CC;
+  background: #00B4CC;
+  text-align: center;
+  color: #fff;
+  border-radius: 0 5px 5px 0;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+/*Resize the wrap to see the search bar change!*/
+.wrap{
+  width: 30%;
+  position: absolute;
+  top: 70%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+pre {
+    white-space: pre-wrap;
+}
+
+.uploadInput {
+
+margin-bottom: 100px;
+
+}
+
+
+
+
+
+
+
+
+
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <h1>Fuzzy CodeQL</h1>
+    <h2>Libxml2 Example Dataset Loaded</h2>
+    <form class="search uploadInput" hx-trigger="click from:.uploadButton delay:100ms" hx-post="/upload"
+          hx-swap="innerHTML swap:1s">
+        <input class="searchTerm" type="text" name="path" placeholder="Absolute OS Path to Codebase"/>
+        <button type="submit" class="uploadButton">
+            <i class="fa fa-upload"></i>
+        </button>
+    </form>
+
+
+    <form class="search" hx-post="/search" hx-trigger="click from:.searchButton delay:100ms" hx-swap="afterbegin"
+          hx-target=".results">
+        <code class="language-c">
+        <textarea name="query" id="queryTextArea" class="searchTerm" rows="25" cols="50">
+// Write some code to search in your code base
+typedef struct {
+  void* arg_socket;
+  zmq_msg_t* arg_msg;
+  char* arg_string;
+  unsigned long arg_len;
+  int arg_int, arg_command;
+
+  int signal_fd;
+  int pad;
+  void* context;
+  sem_t sem;
+} acl_zmq_context;
+        </textarea>
+        </code>
+        <button type="submit" class="searchButton">
+            <i class="fa fa-search"></i>
+        </button>
+        <button type="submit" class="vulnButton" hx-post="/vuln" hx-swap="afterbegin" hx-target=".results">
+            <i class="fa fa-bug"></i>
+        </button>
+    </form>
+    <h2> Findings:</h2><br>
+    <div class="results">
+
+    </div>
+</div>
+<script>
+
+  var editor = CodeMirror.fromTextArea(document.getElementById("queryTextArea"), {
+    lineNumbers: true,
+    theme: "eclipse",
+    mode: "text/x-csrc",
+  });
+hljs.highlightAll();
+
+
+editor.on('change', (editor) => {
+    editor.save();
+});
+document.addEventListener('htmx:afterRequest', function(evt) {
+
+    var myDiv = document.getElementById('results');
+    myDiv.scrollTop = 0;
+});
+
+editor.setSize(500, 300);
+
+
+
+
+
+</script>
+</body>
+
+</html>
+<!-- have a button POST a click via AJAX -->
+

@@ -1,0 +1,15 @@
+torch
+transformers
+tqdm
+numpy
+scikit-learn
+sentence-transformers
+flask
+torchvision
+torchaudio
+sctokenizer
+faiss-cpu
+umap-learn
+lizard
+optimum
+pathlib
