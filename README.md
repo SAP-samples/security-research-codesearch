@@ -31,6 +31,49 @@ for **natural language** and **code similarity** search.
  - optimum
  - pathlib
 
+## Fuzzy Code Search
+
+Vector representations of the functions in **your project** is loaded into the FAISS vector database.
+
+Run the script `server.py` and connect to `localhost:5000` (resp. `127.0.0.1:5000`).
+
+### Upload Dataset
+
+(cf. method `load_database_from_folder` in `database.py`)
+
+Scan a local directory for `.c` or `.cpp` files, encode them with CodeT5+ and load them into the vector database.
+
+### Search Button
+
+(cf. method `query` in `database.py`)
+
+*Prerequisite: having uploaded your project.*
+
+ - Find code similar to given sample code put into the text box (e.g. duplicates of known/found bugs) 
+ - Find code that matches a textual description in the input field.
+
+
+### Vulnerability Search
+
+(cf. method check_for_vulns in database.py)
+
+Search for examples from a (fixed) list of known vulnerable functions ("data/vuln_queries_functions.pkl") inside the uploaded project.
+
+
+## Vulnerable Code Clone Detection
+
+A **dataset consisting of vulnerable samples** (taken from DiverseVul) is loaded into the FAISS vector database.
+
+Run the script `server2.py` and connect to `localhost:5000` (resp. `127.0.0.1:5000`).
+
+Write some code in the search field. Then similar code to the input is searched for in the database of vulnerable samples.
+
+### Search Button
+
+(cf. method index_query in database.py)
+
+lookup some code (text box) in the database of vulnerable samples and display CWE-Info. 
+
 ## Known Issues
 
 No known issues.
